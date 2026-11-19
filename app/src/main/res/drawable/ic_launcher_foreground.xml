@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer stylized D / Shield emblem inside 66dp safe zone (21..87) -->
+    <path
+        android:pathData="M34,30 L56,30 C70.5,30 78,39.5 78,54 C78,68.5 70.5,78 56,78 L34,78 Z M44,40 L44,68 L55,68 C63.5,68 68,62.5 68,54 C68,45.5 63.5,40 55,40 Z"
+        android:fillType="evenOdd">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="34"
+                android:startY="30"
+                android:endX="78"
+                android:endY="78"
+                android:type="linear">
+                <item android:color="#00F5A0" android:offset="0.0" />
+                <item android:color="#00D9F5" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Inner upward data exchange bolt/bars -->
+    <path
+        android:fillColor="#A78BFA"
+        android:pathData="M48,58 L54,47 L58,52 L63,44 L63,56 L58,56 L54,62 L48,58 Z" />
+</vector>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Dilsat Data Sell</string>
+    <string name="tagline">Monetize Unused Mobile &amp; Broadband Data</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="activate_title">Activate Your Account</string>
+    <string name="activate_subtitle">One-time app activation fee</string>
+    <string name="activate_fee_amount">₹5.00</string>
+    <string name="pay_now_button">PAY ₹5 NOW</string>
+    <string name="retry_payment">Retry Payment</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_sell_data">Sell Data</string>
+    <string name="nav_wallet">Wallet</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+</resources>

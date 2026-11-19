@@ -1,0 +1,397 @@
+{
+  "entities": {
+    "AppSettings": {
+      "title": "AppSettings",
+      "description": "Global marketplace, activation, withdrawal, and referral configuration controlled by admins.",
+      "type": "object",
+      "properties": {
+        "activationFeeInr": { "type": "number", "description": "One-time activation fee in INR (default 5.0)" },
+        "activationUpiId": { "type": "string", "description": "Merchant UPI ID for activation fee" },
+        "minWithdrawalInr": { "type": "number", "description": "Minimum withdrawal amount in INR" },
+        "referralRewardInr": { "type": "number", "description": "Referral reward in INR per verified referral" },
+        "referralsEnabled": { "type": "boolean", "description": "Whether referral program is enabled" },
+        "supportEmail": { "type": "string", "description": "Customer support email" },
+        "announcementBanner": { "type": "string", "description": "Top banner announcement" },
+        "ratePer100MbInr": { "type": "number", "description": "Payout rate in INR per 100 MB sold (default 2.0)" },
+        "minSellDataMb": { "type": "number", "description": "Minimum data quantity in MB per sell request (default 100.0)" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": [
+        "activationFeeInr",
+        "activationUpiId",
+        "minWithdrawalInr",
+        "referralRewardInr",
+        "referralsEnabled",
+        "supportEmail",
+        "announcementBanner",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Authorized admin UID registry.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin"] },
+        "addedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "role", "addedBy", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Registered user profile, activation state, and wallet metrics.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "photoUri": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "activationStatus": { "type": "string", "enum": ["unactivated", "pending_verification", "activated", "rejected"] },
+        "activationFailureReason": { "type": "string" },
+        "walletBalance": { "type": "number" },
+        "pendingBalance": { "type": "number" },
+        "totalEarnings": { "type": "number" },
+        "todayEarnings": { "type": "number" },
+        "totalDataSoldGb": { "type": "number" },
+        "pendingDataGb": { "type": "number" },
+        "totalTransactions": { "type": "integer" },
+        "referralCode": { "type": "string" },
+        "referredByCode": { "type": "string" },
+        "referredByUid": { "type": "string" },
+        "referralCount": { "type": "integer" },
+        "referralEarnings": { "type": "number" },
+        "blocked": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "fullName",
+        "mobileNumber",
+        "email",
+        "role",
+        "activationStatus",
+        "walletBalance",
+        "pendingBalance",
+        "totalEarnings",
+        "todayEarnings",
+        "totalDataSoldGb",
+        "pendingDataGb",
+        "totalTransactions",
+        "referralCode",
+        "referralCount",
+        "referralEarnings",
+        "blocked",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ReferralCodeLookup": {
+      "title": "ReferralCodeLookup",
+      "description": "Publicly resolvable referral code mapping without exposing user PII.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "ownerUid", "ownerName", "createdAt"]
+    },
+    "ReferralRecord": {
+      "title": "ReferralRecord",
+      "description": "Tracked referral invitation and reward status.",
+      "type": "object",
+      "properties": {
+        "referrerUid": { "type": "string" },
+        "referredUid": { "type": "string" },
+        "referredName": { "type": "string" },
+        "referralCode": { "type": "string" },
+        "rewardAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "credited", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "referrerUid",
+        "referredUid",
+        "referredName",
+        "referralCode",
+        "rewardAmount",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UtrClaim": {
+      "title": "UtrClaim",
+      "description": "Immutable UTR lock preventing duplicate payment claims.",
+      "type": "object",
+      "properties": {
+        "utr": { "type": "string" },
+        "userId": { "type": "string" },
+        "purpose": { "type": "string", "enum": ["activation"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["utr", "userId", "purpose", "createdAt"]
+    },
+    "ActivationPayment": {
+      "title": "ActivationPayment",
+      "description": "Activation fee payment submission awaiting backend/admin verification.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "amount": { "type": "number" },
+        "upiId": { "type": "string" },
+        "utrReference": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending_verification", "verified", "rejected"] },
+        "adminNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "userEmail",
+        "amount",
+        "upiId",
+        "utrReference",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DataPackage": {
+      "title": "DataPackage",
+      "description": "Marketplace data selling package configured by admins.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "packageType": { "type": "string", "enum": ["4G", "5G", "Broadband", "Rollover"] },
+        "pricePerGb": { "type": "number" },
+        "minGb": { "type": "number" },
+        "maxGb": { "type": "number" },
+        "description": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "name",
+        "packageType",
+        "pricePerGb",
+        "minGb",
+        "maxGb",
+        "description",
+        "active",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DataSellRequest": {
+      "title": "DataSellRequest",
+      "description": "User data selling request submitted in the marketplace.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "packageId": { "type": "string" },
+        "packageName": { "type": "string" },
+        "packageType": { "type": "string", "enum": ["4G", "5G", "Broadband", "Rollover"] },
+        "quantityGb": { "type": "number" },
+        "pricePerGb": { "type": "number" },
+        "estimatedPayout": { "type": "number" },
+        "networkProvider": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "completed"] },
+        "adminNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "packageId",
+        "packageName",
+        "packageType",
+        "quantityGb",
+        "pricePerGb",
+        "estimatedPayout",
+        "networkProvider",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "WithdrawalRequest": {
+      "title": "WithdrawalRequest",
+      "description": "User wallet withdrawal request via UPI.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "amount": { "type": "number" },
+        "upiId": { "type": "string" },
+        "accountHolderName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "processing", "paid", "rejected"] },
+        "adminNote": { "type": "string" },
+        "utrNumber": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "amount",
+        "upiId",
+        "accountHolderName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "WalletTransaction": {
+      "title": "WalletTransaction",
+      "description": "Immutable financial transaction ledger entry with unique transaction ID.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "referenceCode": { "type": "string" },
+        "type": { "type": "string", "enum": ["activation_fee", "data_sale_credit", "withdrawal_debit", "referral_bonus", "admin_adjustment"] },
+        "direction": { "type": "string", "enum": ["credit", "debit", "fee"] },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["completed", "pending", "failed"] },
+        "description": { "type": "string" },
+        "relatedId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "referenceCode",
+        "type",
+        "direction",
+        "amount",
+        "status",
+        "description",
+        "createdAt"
+      ]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "User-scoped in-app notification.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "category": { "type": "string", "enum": ["payment", "data_sell", "withdrawal", "referral", "announcement"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "message", "category", "read", "createdAt"]
+    },
+    "GlobalAnnouncement": {
+      "title": "GlobalAnnouncement",
+      "description": "System-wide announcement broadcast by admin.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "priority": { "type": "string", "enum": ["normal", "high"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "message", "priority", "createdAt"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer support or payment issue ticket.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "category": { "type": "string", "enum": ["payment_issue", "withdrawal", "data_sell", "account", "general"] },
+        "subject": { "type": "string" },
+        "description": { "type": "string" },
+        "utrReference": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "in_progress", "resolved"] },
+        "adminReply": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "userEmail",
+        "category",
+        "subject",
+        "description",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/app_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AppSettings" },
+      "description": "Global application settings document (global)."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Authorized admin role documents."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user account profiles and wallet summaries."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/AppNotification" },
+      "description": "User-scoped in-app notifications."
+    },
+    "/referral_codes/{code}": {
+      "schema": { "$ref": "#/entities/ReferralCodeLookup" },
+      "description": "Referral code lookup table."
+    },
+    "/referrals/{referralId}": {
+      "schema": { "$ref": "#/entities/ReferralRecord" },
+      "description": "Referral tracking and reward records."
+    },
+    "/utr_claims/{utrId}": {
+      "schema": { "$ref": "#/entities/UtrClaim" },
+      "description": "Immutable UTR claims preventing duplicate payments."
+    },
+    "/activation_payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/ActivationPayment" },
+      "description": "Activation payment verification requests."
+    },
+    "/data_packages/{packageId}": {
+      "schema": { "$ref": "#/entities/DataPackage" },
+      "description": "Admin-managed marketplace data packages."
+    },
+    "/data_sell_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/DataSellRequest" },
+      "description": "User data selling requests."
+    },
+    "/withdrawals/{withdrawalId}": {
+      "schema": { "$ref": "#/entities/WithdrawalRequest" },
+      "description": "User withdrawal requests."
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/WalletTransaction" },
+      "description": "Verified wallet and payment transaction ledger."
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/GlobalAnnouncement" },
+      "description": "Broadcast system announcements."
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Customer support and payment issue tickets."
+    }
+  }
+}
